@@ -1,0 +1,22 @@
+{
+  "name": "google-signin-experiments",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "live-server --port=8090"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/richardimaoka/google-signin-experiments.git"
+  },
+  "author": "",
+  "license": "ISC",
+    "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "bugs": {
+    "url": "https://github.com/richardimaoka/google-signin-experiments/issues"
+  },
+  "homepage": "https://github.com/richardimaoka/google-signin-experiments#readme"
+}
