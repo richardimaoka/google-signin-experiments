@@ -4,9 +4,46 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <title>Document</title>
   </head>
   <body>
-    hello
+    <script>
+      function handleCredentialResponse(response) {
+        console.log("Encoded JWT ID token: " + response.credential);
+        console.log("select_by: " + response.select_by);
+      }
+      window.onload = function () {
+        google.accounts.id.initialize({
+          client_id:
+            // "406596727402-002fllm5k8apkeg1gop7g57qn8m42vfb.apps.googleusercontent.com",
+            "248858822102-9ib893e4rbb8q8svh2iup3kda9b9835m.apps.googleusercontent.com",
+          callback: handleCredentialResponse,
+        });
+        google.accounts.id.renderButton(
+          document.getElementById("buttonDiv"),
+          { theme: "outline", size: "large" } // customization attributes
+        );
+        google.accounts.id.prompt((notification) => {
+          console.log(`isDisplayMoment = ${notification.isDisplayMoment()}`);
+          console.log(`isDisplayed = ${notification.isDisplayed()}`);
+          console.log(
+            `getNotDisplayedReason = ${notification.getNotDisplayedReason()}`
+          );
+          console.log(`isSkippedMoment = ${notification.isSkippedMoment()}`);
+          console.log(`getSkippedReason = ${notification.getSkippedReason()}`);
+          console.log(
+            `isDismissedMoment = ${notification.isDismissedMoment()}`
+          );
+          console.log(
+            `getDismissedReason = ${notification.getDismissedReason()}`
+          );
+          console.log(`getMomentType = ${notification.getMomentType()}`);
+        });
+        // also display the One Tap dialog
+      };
+    </script>
+
+    <div id="buttonDiv"></div>
   </body>
 </html>
