@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { LoginTicket, OAuth2Client } from "google-auth-library";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { GoogleAuth } from "google-auth-library";
 
 type ErrorData = {
   error: string;
@@ -36,6 +37,14 @@ const verifyIdToken = async (
   }
 };
 
+const fetchIdToken = async (targetAudience: string): Promise<string> => {
+  const auth = new GoogleAuth();
+  const client = await auth.getIdTokenClient(targetAudience);
+  const token = await client.idTokenProvider.fetchIdToken(targetAudience);
+  console.log("fetchIdToken for session token", token);
+  return token;
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ErrorData>
@@ -68,9 +77,18 @@ export default async function handler(
     return res.status(401).json({ error: "unauthorized" });
   }
 
+  const session_token =
+    process.env.NODE_ENV === "production"
+      ? await fetchIdToken(baseUrl)
+      : body.credential;
+
+  if (!session_token) {
+    return res.status(500).json({ error: "internal server error" });
+  }
+
   res.setHeader(
     "Set-Cookie",
-    `id_token=${body.credential}; SameSite=Lax; Secure; HttpOnly; Path=/;`
+    `id_token=${session_token}; SameSite=Lax; Secure; HttpOnly; Path=/;`
   );
 
   return res.redirect("/");
