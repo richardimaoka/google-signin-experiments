@@ -37,12 +37,27 @@ const verifyIdToken = async (
   }
 };
 
-const fetchIdToken = async (targetAudience: string): Promise<string> => {
-  const auth = new GoogleAuth();
-  const client = await auth.getIdTokenClient(targetAudience);
-  const token = await client.idTokenProvider.fetchIdToken(targetAudience);
-  console.log("fetchIdToken for session token", token);
-  return token;
+const fetchIdToken = async (ticket: LoginTicket): Promise<string> => {
+  try {
+    const payload = await ticket.getPayload();
+    if (!payload) {
+      return "";
+    }
+
+    const targetAudience = payload.email;
+    if (!targetAudience) {
+      return "";
+    }
+
+    const auth = new GoogleAuth();
+    const client = await auth.getIdTokenClient(targetAudience);
+    const token = await client.idTokenProvider.fetchIdToken(targetAudience);
+    console.log("fetchIdToken for session token", token);
+    return token;
+  } catch (error) {
+    console.log(error);
+    return "";
+  }
 };
 
 export default async function handler(
@@ -79,7 +94,7 @@ export default async function handler(
 
   const session_token =
     process.env.NODE_ENV === "production"
-      ? await fetchIdToken(baseUrl)
+      ? await fetchIdToken(ticket)
       : body.credential;
 
   if (!session_token) {
